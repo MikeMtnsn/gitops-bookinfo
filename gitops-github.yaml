@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitops-github
+  annotations:
+    tekton.dev/git-0: https://github.com # Described below
+type: kubernetes.io/basic-auth
+stringData:
+  username: $GITUSER
+  password: $GITOKEN

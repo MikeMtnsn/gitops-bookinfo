@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: gitops-task
+spec:
+  inputs:
+    params:
+      - description: The location of the repo to be updated
+        name: GITOPS_REPO
+        type: string
+    resources:
+      - name: image
+        type: image
+      - name: source
+        type: git
+  steps:
+    - args:
+        - |-
+          set -e
+          SHORT_GIT_HASH=$(cat .git/FETCH_HEAD | awk '{print substr($1,0,7)}')
+          NEW_IMAGE=$(inputs.resources.image.url):$SHORT_GIT_HASH
+          echo Setting image to $NEW_IMAGE
+          git config --global user.email "tekton@ibmcloud.com"
+          git config --global user.name "Tekton Pipeline"
+          git clone -b master $(inputs.params.GITOPS_REPO) gitops
+          cd gitops
+          cd dev
+          ls -al
+          cp -f ./deployment.yaml.template ./deployment.yaml
+          sed -i "s|<IMAGE_NAME>|${NEW_IMAGE}|g" ./deployment.yaml
+          date > timestamp
+          ls -al
+          cd ../prod
+          ls -al
+          cp -f ./deployment.yaml.template ./deployment.yaml
+          sed -i "s|<IMAGE_NAME>|${NEW_IMAGE}|g" ./deployment.yaml
+          date > timestamp
+          git add -u
+          git commit -m "Updating image name : $NEW_IMAGE"
+          git push
+      command:
+        - /bin/bash
+        - '-c'
+      image: docker.io/csantanapr/helm-kubectl-curl-git-jq-yq
+      name: gitops-step
+      resources: {}
+      workingDir: /workspace/source
