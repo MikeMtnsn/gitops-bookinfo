@@ -16,7 +16,7 @@ You will need a github account to be able to store your configuration of what is
 
 If you want to let Tekton do updates later on, or you want to make the repository private then you need to generate a ["personal access token"](https://github.com/settings/tokens). Access needs are `repo`:  . Suggest to store it in `.secrets` (or where works for you).
 
-### Argocd insance
+### Argocd instance
 There is already a running argocd - setup via the argocd operator in namespace `arcgocd`. (You can see more about this under links).
 
 #### Argocd access information
@@ -50,6 +50,8 @@ oc adm policy add-cluster-role-to-user cluster-admin -z argocd-application-contr
 ### Register your github repository in argocd
 Go to "manage your repositiroes..." aka "settings".
 Select *Repositories*.
+
+If the repos you want to use does not exist already create it. If it exist skip this step.
 
 Select *CONNECT REPO USING HTTPS*.
 
@@ -106,7 +108,7 @@ no changes
 Select *CREATE*.
 
 
-## Deploy liek a gitops
+## Deploy like a gitops
 
 ### Diff
 First do an "app diff". How far is your application actually from the gitops repos?
@@ -143,6 +145,12 @@ Change the path from `prod-v2` to `prod-v2-fail`.
 Repeat the steps from before. What do you expect will be the output?
 
 Maybe worth going back to `prod-v2` .... or?
+
+
+### What would it ake to deploy to another cluster?
+
+### What would it ake to deploy to another cloud provider or private cloud?
+
 
 # Exercise done
 
