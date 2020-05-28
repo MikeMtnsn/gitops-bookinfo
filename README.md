@@ -106,12 +106,45 @@ no changes
 Select *CREATE*.
 
 
-## See project state
+## Deploy liek a gitops
 
+### Diff
+First do an "app diff". How far is your application actually from the gitops repos?
 
-See how it deploys, and correct any errors as needed. (Check exposed URL works)
+Is it realistci that a sync will succed?
 
+### Sync to prod
+Select sync and then synchronize.
 
+WHat happens?
+
+Can you still access your bookinfo page? Is the gateway part of the setup being monitoried by argocd?
+
+### Test and update to prod-v1+
+Now lets run some workload to see the new v2 release. Try the following steps.
+
+Select *app details*. Then select *Edit*. Then change path from `prod` to `prod-v1+`. Select *SAVE*.
+What happens?
+
+Look at "app diff" again.
+
+Will a sync succed? Try it *sync* then *synchronize*.
+
+Can you still access your bookinfo page? If you load it 10 times will you see the book cover?
+
+### Test and update to prod-v2
+Change the path from `prod-v1+` to `prod-v2`.
+
+Repeat the steps from before. What do you expect will be the output?
+
+### Test and update to prod-v2-fail
+Change the path from `prod-v2` to `prod-v2-fail`.
+
+Repeat the steps from before. What do you expect will be the output?
+
+Maybe worth going back to `prod-v2` .... or?
+
+# Exercise done
 
 ### Links
 [ArgoCD inspiration](https://github.com/ibm-garage-cph/openshift-gitops-101/)
