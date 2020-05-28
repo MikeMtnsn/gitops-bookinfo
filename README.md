@@ -127,7 +127,9 @@ There is a command line tool for argocd, for convinience it is provided here as 
 
 
 
-#### SKIPPED:  Create a new bookinfo-prod namespace & run tekton
+# STOP HERE - SKIPPED
+
+## Create a new bookinfo-prod namespace & run tekton
 First you need to create the empty project name it `bookinfo-prod-$INITIALS`. You also need to ensure it can download container images to it (Add secret and ensure service account uses secret).
 
 ```bash
