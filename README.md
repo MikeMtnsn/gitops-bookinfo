@@ -1,41 +1,133 @@
 # Setting up gitops with argocd
 
-## Prereq
-There is already two running Tekton pipelines for:
-1. productpage
+## Optional
+### Tekton
+There could already be two running Tekton pipelines for:
+1. productpage-v2
 2. details-v2 
 
-You should have those in your `pipeline-$INITIALS` project.
+If you have them they should be in your `tekton-$INITIALS` project.
 
-There is already a running argocd - setup via the argocd operator in namespace `arcgocd`.
-(For later records you should be able to see the setup [here](https://github.com/ibm-garage-cph/openshift-gitops-101/ ).
+If this is not the case do not worry - you can do this later. This task is possible to perform without.
 
-### Argocd access
-The default argocd you need two key informations about:
+## Prereq
+### Github repos access
+You will need a github account to be able to store your configuration of what is going to be deployed. If you do not have a github.com account please create one. 
+
+If you want to let Tekton do updates later on, or you want to make the repository private then you need to generate a ["personal access token"](https://github.com/settings/tokens). Access needs are `repo`:  . Suggest to store it in `.secrets` (or where works for you).
+
+### Argocd insance
+There is already a running argocd - setup via the argocd operator in namespace `arcgocd`. (You can see more about this under links).
+
+#### Argocd access information
+To access the default argocd you need two key informations. These are:
 1. URL. Retrieve it via the route: `oc get route -n argocd`. Hint you can store this in an ARGOCDURL environment variable.
-2. Password. Retrive it via the secret: `oc get secret example-argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | base64 -d && echo`. Hint you can store this in an ARGOCDPW environment variable and/or put it into your .secret file.
+2. Password. Retrive it via the secret: `oc get secret example-argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | base64 -d && echo`. Hint you can store this in an ARGOCDPW environment variable and/or put it into your .secret file. We will provide this information to avoid any multi platform issues.
 3. Username will be shared and be `admin`.
 
-### Argocd command line tool
-[Installation instructions](https://argoproj.github.io/argo-cd/cli_installation/)
+
+## Setup argocd project and application...
+
+### Fork gitops repos
+Fork this git repository `https://github.com/ibm-garage-cph/bookinfo-productpage-gitops.git`. 
+We recommend you make it public for this exercise, however for a real setup this should certainly be a well protected private repository.
+Save the URL to $GITOPS_REPO.
+Look at the content and if anything needs to be changed (hint: hostnames...) then change it and push back the updates...
 
 ### Argocd login
 From web console use `$ARGOCDURL`, and apply username and password when asked.
 
-From command line use `argocd login $ARGOCDURL`....
-
-
-### Github repos access
-You will need a github account to be able to store your configuration of what is going to be deployed. If you do not have a github.com account please create one. And setup an empty repository that you will populate at first, and later let the Tekton CI update it, and ArgoCd take the information and use it for deployment.
-You then need to generate a ["personal access token"](https://github.com/settings/tokens). Access needs are `repo`:  . Suggest to store it in `.secrets`.
-
-#### Fork gitops repos
-Fork this git repository `https://github.com/ibm-garage-cph/bookinfo-productpage-gitops.git`. Save the URL to $GITOPS_REPO.
-Look at the content and if anything needs to be changed (hint: hostnames...) then change it and push back the updates...
-
-
 ### Preparing argocd for your namespace
 Argocd also needs to be able to deploy into the workspace being simulated as "production".
+We will allow argocd to run across the cluster for simplicity:
+```bash
+oc project bookinfo-$INITIALS
+oc adm policy add-cluster-role-to-user cluster-admin -z argocd-application-controller -n argocd
+```
+
+## Create project in argocd to do CD
+
+### Register your github repository in argocd
+Go to "manage your repositiroes..." aka "settings".
+Select *Repositories*.
+
+Select *CONNECT REPO USING HTTPS*.
+
+Provide input for:
+```
+Type=GIT
+Repository URL=GITOPS_REPO (or https://github.com/ibm-garage-cph/bookinfo-productpage-gitops)
+username=(if you made it private)
+password=(if you made it private)
+```
+Select *CONNECT*.
+
+### Create your project in argocd
+Go to "manage your repositiroes..." aka "settings".
+Select *Projects*
+
+Select *NEW PROJECT*
+
+Provide input for:
+```
+Project name: bookinfo-$INITIALS
+
+Sources: click *add source* select your git repository.
+Destinations: bookinfo-$INITIALS
+
+```
+Select *CREATE*.
+
+
+### Create your application in argocd
+Go to "manage your applications..." aka "applications.
+
+Select *NEW APP*
+
+Provide input for:
+```
+Application name: $INITIALS-productpage-v2
+Project: bookinfo-$INITIALS
+SYNC POLICY: Manual
+
+SOURCE:
+Repository URL: GITOPS_REPO (or https://github.com/ibm-garage-cph/bookinfo-productpage-gitops)
+Revision: HEAD
+Path: prod
+
+DESTINATION:
+Cluster: in-cluster
+Namespace: bookinfo-$INITIALS
+
+Directory:
+no changes
+
+```
+Select *CREATE*.
+
+
+## See project state
+
+
+See how it deploys, and correct any errors as needed. (Check exposed URL works)
+
+
+
+### Links
+[ArgoCD inspiration](https://github.com/ibm-garage-cph/openshift-gitops-101/)
+Inspiration from [cp4app liberty app modernization](https://ibm-cloud-architecture.github.io/cloudpak-for-applications/liberty/liberty-deploy-tekton-argocd/).
+
+#### Argocd command line tool
+There is a command line tool for argocd, for convinience it is provided here as well:
+[Installation instructions](https://argoproj.github.io/argo-cd/cli_installation/)
+
+
+
+
+
+
+
+#### SKIPPED:  Create a new bookinfo-prod namespace & run tekton
 First you need to create the empty project name it `bookinfo-prod-$INITIALS`. You also need to ensure it can download container images to it (Add secret and ensure service account uses secret).
 
 ```bash
@@ -115,47 +207,3 @@ Last run the pipeline again this time with the added parameter GITOPS_REPO to yo
     -p GITOPS_REPO="$GITOPS_REPO"
 ```
 Move on to create the argocd steps. But do come back and check the result of the pipeline to see it ran without errors.
-
-# Create project in argocd to do CD
-This will be described via commandline, but can be applied equivalently from web console.
-
-First define the gitops repository to be used:
-```bash
-
-````
-
-Then create the argocd project.
-
-```bash
-argocd proj create bookinfo-prod-$INITIALS --orphaned-resources --orphaned-resources-warn --insecure -d https://kubernetes.default.svc,bookinfo-prod-$INITIALS
-```
-
-## Create productpage in project
-Then create the application productpage inside the argocd project.
-
-Select create projectand use below information:
-```
-project: bookinfo-prod-$INITIALS
-source:
-  repoURL: '$GITOPS_REPO'
-  path: prod
-  targetRevision: HEAD
-destination:
-  server: 'https://kubernetes.default.svc'
-  namespace: bookinfo-prod-$INITIALS
-syncPolicy:
-  automated:
-    prune: true
-    selfHeal: true
-```
-
-
-See how it deploys, and correct any errors as needed. (Check exposed URL works)
-
-## create details-v2 in project
-
-
-
-### Links
-[ArgoCD inspiration](https://github.com/ibm-garage-cph/openshift-gitops-101/)
-Inspiration from [cp4app liberty app modernization](https://ibm-cloud-architecture.github.io/cloudpak-for-applications/liberty/liberty-deploy-tekton-argocd/).
