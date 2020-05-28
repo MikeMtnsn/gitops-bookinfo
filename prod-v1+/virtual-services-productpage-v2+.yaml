@@ -12,10 +12,10 @@ spec:
     - destination:
         host: productpage
         subset: v1
-      weight: 0
+      weight: 80
     - destination:
         host: productpage
         subset: v2
-      weight: 100
+      weight: 20
 
  
