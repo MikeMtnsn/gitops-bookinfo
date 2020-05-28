@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: productpage
+    version: v2
+  name: productpage-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productpage
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: productpage
+        version: v2
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      containers:
+        - image: de.icr.io/kmddk/bookinfo-productpage-v2:1
+          imagePullPolicy: Always
+          name: productpage-v2
+          env:
+            - name: DETAILS_HOSTNAME
+              value: details-v2
+          ports:
+            - containerPort: 9080
+              protocol: TCP
