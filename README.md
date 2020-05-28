@@ -29,7 +29,7 @@ To access the default argocd you need two key informations. These are:
 ## Setup argocd project and application...
 
 ### Fork gitops repos
-Fork this git repository `https://github.com/ibm-garage-cph/bookinfo-productpage-gitops.git`. 
+Fork this git repository `https://github.com/ibm-garage-cph/gitops-bookinfo`. 
 We recommend you make it public for this exercise, however for a real setup this should certainly be a well protected private repository.
 Save the URL to $GITOPS_REPO.
 Look at the content and if anything needs to be changed (hint: hostnames...) then change it and push back the updates...
@@ -56,7 +56,7 @@ Select *CONNECT REPO USING HTTPS*.
 Provide input for:
 ```
 Type=GIT
-Repository URL=GITOPS_REPO (or https://github.com/ibm-garage-cph/bookinfo-productpage-gitops)
+Repository URL=GITOPS_REPO (or https://github.com/ibm-garage-cph/gitops-bookinfo)
 username=(if you made it private)
 password=(if you made it private)
 ```
@@ -91,7 +91,7 @@ Project: bookinfo-$INITIALS
 SYNC POLICY: Manual
 
 SOURCE:
-Repository URL: GITOPS_REPO (or https://github.com/ibm-garage-cph/bookinfo-productpage-gitops)
+Repository URL: GITOPS_REPO (or https://github.com/ibm-garage-cph/gitops-bookinfo)
 Revision: HEAD
 Path: prod
 
@@ -120,10 +120,6 @@ Inspiration from [cp4app liberty app modernization](https://ibm-cloud-architectu
 #### Argocd command line tool
 There is a command line tool for argocd, for convinience it is provided here as well:
 [Installation instructions](https://argoproj.github.io/argo-cd/cli_installation/)
-
-
-
-
 
 
 
