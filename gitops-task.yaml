@@ -25,15 +25,15 @@ spec:
           git clone -b master $(inputs.params.GITOPS_REPO) gitops
           cd gitops
           cd dev
-          ls -al
+          ls -al    
           cp -f ./deployment.yaml.template ./deployment.yaml
-          sed -i "s|<IMAGE_NAME>|${NEW_IMAGE}|g" ./deployment.yaml
+          sed -i "s|image:.*$|image: ${NEW_IMAGE}|g" ./deployment.yaml
           date > timestamp
           ls -al
           cd ../prod
           ls -al
           cp -f ./deployment.yaml.template ./deployment.yaml
-          sed -i "s|<IMAGE_NAME>|${NEW_IMAGE}|g" ./deployment.yaml
+          sed -i "s|image:.*$|image: ${NEW_IMAGE}|g" ./deployment.yaml
           date > timestamp
           git add -u
           git commit -m "Updating image name : $NEW_IMAGE"
