@@ -178,6 +178,7 @@ oc patch serviceaccount default -n bookinfo-prod-$INITIALS -p '{"imagePullSecret
 Once it is created, you need to grant access from argocd to be able to deploy updates to it.
 ```bash
 oc adm policy add-cluster-role-to-user cluster-admin -z argocd-application-controller -n argocd
+oc adm policy add-cluster-role-to-user cluster-admin -z argocd-server -n argocd
 ```
 
 
