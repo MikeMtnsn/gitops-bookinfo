@@ -20,7 +20,7 @@ spec:
         sidecar.istio.io/inject: 'true'
     spec:
       containers:
-        - image: de.icr.io/kmddk/bookinfo-productpage-v2:66148ef
+        - image: de.icr.io/kmddk/bookinfo-productpage-v2:89dda65
           imagePullPolicy: Always
           name: productpage-v2
           env:
