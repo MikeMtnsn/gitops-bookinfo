@@ -14,19 +14,19 @@ If this is not the case do not worry - you can do this later. This task is possi
 ### Github repos access
 You will need a github account to be able to store your configuration of what is going to be deployed. If you do not have a github.com account please create one. 
 
-If you want to let Tekton do updates later on, or you want to make the repository private then you need to generate a ["personal access token"](https://github.com/settings/tokens). Access needs are `repo`:  . Suggest to store it in `.secrets` (or where works for you).
+If you want to let Tekton do updates later on, or you want to make the repository private then you need to generate a ["personal access token"](https://github.com/settings/tokens). Access needs are `repo`. We suggest to store it in a `.secrets` file (or where works for you).
 
 ### Argocd instance
-There is already a running argocd - setup via the argocd operator in namespace `arcgocd`. (You can see more about this under links).
+There is already a running Argocd instance - setup via the argocd operator in namespace `arcgocd`. (You can see more about this under links).
 
 #### Argocd access information
-To access the default argocd you need two key informations. These are:
-1. URL. Retrieve it via the route: `oc get route -n argocd`. Hint you can store this in an ARGOCDURL environment variable.
-2. Password. Retrive it via the secret: `oc get secret example-argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | base64 -d && echo`. Hint you can store this in an ARGOCDPW environment variable and/or put it into your .secret file. We will provide this information to avoid any multi platform issues.
+To access the default argocd you need three key informations. These are:
+1. URL. Retrieve it via the route: `oc get route -n argocd`. Hint: you can store this in an ARGOCDURL environment variable.
+2. Password. Retrive it via the secret: `oc get secret example-argocd-cluster -o jsonpath='{.data.admin\.password}' -n argocd | base64 -d && echo`. Hint: you can store this in an ARGOCDPW environment variable and/or put it into your .secret file. We will provide this information to avoid any multi platform issues.
 3. Username will be shared and be `admin`.
 
 
-## Setup argocd project and application...
+## Setup Argocd project and application...
 
 ### Fork gitops repos
 Fork this git repository `https://github.com/ibm-garage-cph/gitops-bookinfo`. 
@@ -37,9 +37,9 @@ Look at the content and if anything needs to be changed (hint: hostnames...) the
 ### Argocd login
 From web console use `$ARGOCDURL`, and apply username and password when asked.
 
-### Preparing argocd for your namespace
+### Preparing Argocd for your namespace
 Argocd also needs to be able to deploy into the workspace being simulated as "production".
-We will allow argocd to run across the cluster for simplicity:
+We will allow Argocd to run across the cluster for simplicity:
 ```bash
 oc project bookinfo-$INITIALS
 oc adm policy add-cluster-role-to-user cluster-admin -z argocd-application-controller -n argocd
@@ -49,7 +49,7 @@ oc adm policy add-cluster-role-to-user cluster-admin -z argocd-server -n argocd
 ## Create project in argocd to do CD
 
 ### Register your github repository in argocd
-Go to "manage your repositiroes..." aka "settings".
+Go to "manage your repositories..." aka "settings".
 Select *Repositories*.
 
 If the repos you want to use does not exist already create it. If it exist skip this step.
@@ -66,7 +66,7 @@ password=(if you made it private)
 Select *CONNECT*.
 
 ### Create your project in argocd
-Go to "manage your repositiroes..." aka "settings".
+Go to "manage your repositories..." aka "settings".
 Select *Projects*
 
 Select *NEW PROJECT*
@@ -109,19 +109,19 @@ no changes
 Select *CREATE*.
 
 
-## Deploy like a gitops
+## Deploy like a GitOps
 
 ### Diff
 First do an "app diff". How far is your application actually from the gitops repos?
 
-Is it realistci that a sync will succed?
+Is it realistic that a sync will succeed?
 
 ### Sync to prod
 Select sync and then synchronize.
 
-WHat happens?
+What happens?
 
-Can you still access your bookinfo page? Is the gateway part of the setup being monitoried by argocd?
+Can you still access your bookinfo page? Is the Istio `Gateway` part of the setup being monitoried by Argocd?
 
 ### Test and update to prod-v1+
 Now lets run some workload to see the new v2 release. Try the following steps.
@@ -143,14 +143,14 @@ Repeat the steps from before. What do you expect will be the output?
 ### Test and update to prod-v2-fail
 Change the path from `prod-v2` to `prod-v2-fail`.
 
-Repeat the steps from before. What do you expect will be the output?
+Repeat the steps from before. What would you expect the output to be?
 
 Maybe worth going back to `prod-v2` .... or?
 
 
-### What would it ake to deploy to another cluster?
+### What would it take to deploy to another cluster?
 
-### What would it ake to deploy to another cloud provider or private cloud?
+### What would it take to deploy to another cloud provider or private cloud?
 
 
 # Exercise done
