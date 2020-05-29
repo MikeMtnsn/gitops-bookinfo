@@ -43,6 +43,7 @@ We will allow argocd to run across the cluster for simplicity:
 ```bash
 oc project bookinfo-$INITIALS
 oc adm policy add-cluster-role-to-user cluster-admin -z argocd-application-controller -n argocd
+oc adm policy add-cluster-role-to-user cluster-admin -z argocd-server -n argocd
 ```
 
 ## Create project in argocd to do CD
